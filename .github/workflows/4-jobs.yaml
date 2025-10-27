@@ -1,4 +1,4 @@
-name: CI
+name: Jobs
 
 on:
   pull_request:
