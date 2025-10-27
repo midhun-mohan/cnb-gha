@@ -1,0 +1,38 @@
+name: Matrix Testing
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} with Node ${{ matrix.node-version }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18, 20, 22]
+        exclude:
+          # Skip macOS with Node 18 due to known compatibility issue
+          - os: macos-latest
+            node-version: 18
+        include:
+          # Add extra test on Ubuntu with Node 16
+          - os: ubuntu-latest
+            node-version: 16
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
