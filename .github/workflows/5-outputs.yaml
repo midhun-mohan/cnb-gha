@@ -40,8 +40,9 @@ jobs:
         run: npm ci
 
       - run: npm run build
-      - run: |
-          echo ""Building commit [${{needs.info.outputs.sha}}] on branch [${{needs.info.outputs.branch}}]"
+      - name: printing info
+        run: |
+          echo "Building commit [${{needs.info.outputs.sha}}] on branch [${{needs.info.outputs.branch}}]"
 
   summary:
     runs-on: ubuntu-latest
