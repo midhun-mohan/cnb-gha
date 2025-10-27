@@ -44,6 +44,18 @@ jobs:
         run: |
           echo "Building commit [${{needs.info.outputs.sha}}] on branch [${{needs.info.outputs.branch}}]"
 
+      - name: multiLineOutputs
+        id: multiLine
+        run: |
+          {
+            echo "content<<EOF"
+            echo "Build Report:"
+            echo "node_version=$(node --version)"
+            echo "npm_version=$(npm --version)"
+            echo "All good!"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
   summary:
     runs-on: ubuntu-latest
     needs: [info, build]
