@@ -1,0 +1,71 @@
+name: outputs
+
+on:
+  pull_request:
+
+jobs:
+  info:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+      branch: ${{ steps.branch.outputs.branch }}
+      message: ${{ steps.message.outputs.message }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Get commit SHA
+        id: sha
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Get commit SHA
+        id: branch
+        run: |
+          branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+
+      - name: Get commit message
+        id: message
+        run: |
+          message=$(git log -1 --pretty=%B)
+          echo "message=$message" >> $GITHUB_OUTPUT
+
+  build:
+    runs-on: ubuntu-latest
+    needs: info
+    outputs:
+      content: ${{ steps.multiLine.outputs.content }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: npm ci
+
+      - run: npm run build
+      - name: printing info
+        run: |
+          echo "Building commit [${{needs.info.outputs.sha}}] on branch [${{needs.info.outputs.branch}}]"
+
+      - name: multiLineOutputs
+        id: multiLine
+        run: |
+          {
+            echo "content<<EOF"
+            echo "Build Report:"
+            echo "node_version=$(node --version)"
+            echo "npm_version=$(npm --version)"
+            echo "All good!"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [info, build]
+    steps:
+      - name: Display commit information
+        run: |
+          echo "Commit SHA: ${{needs.info.outputs.sha}}"
+          echo "Branch: ${{needs.info.outputs.branch}}"
+          echo "Message: ${{needs.info.outputs.message}}"
+          echo "Build Content:"
+          echo "${{needs.build.outputs.content}}"
