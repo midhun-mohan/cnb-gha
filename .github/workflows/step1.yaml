@@ -1,0 +1,13 @@
+name: First task
+
+on:
+  push:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run a simple script
+        run: |
+          echo "Hello from GitHub Actions!"
+          echo "Running on $(uname -a)"
