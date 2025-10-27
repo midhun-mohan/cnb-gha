@@ -33,6 +33,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: info
+    outputs:
+      content: ${{ steps.multiLine.outputs.content }}
     steps:
       - uses: actions/checkout@v5
 
@@ -65,3 +67,5 @@ jobs:
           echo "Commit SHA: ${{needs.info.outputs.sha}}"
           echo "Branch: ${{needs.info.outputs.branch}}"
           echo "Message: ${{needs.info.outputs.message}}"
+          echo "Build Content:"
+          echo "${{needs.build.outputs.content}}"
